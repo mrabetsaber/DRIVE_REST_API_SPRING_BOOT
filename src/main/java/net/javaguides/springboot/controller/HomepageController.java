@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -17,6 +18,11 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -24,6 +30,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.view.RedirectView;
 
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeFlow;
@@ -94,12 +101,12 @@ public class HomepageController {
 		boolean isUserAuthenticated = false;
 
 		Credential credential = flow.loadCredential(USER_IDENTIFIER_KEY);
-	if (credential != null) {
+/*	if (credential != null) {
 			boolean tokenValid = credential.refreshToken();
 			if (tokenValid) {
 				isUserAuthenticated = true;
 			}
-		}
+		}*/
 
 		return isUserAuthenticated ? "dashboard.html" : "index.html";
 	}
@@ -112,15 +119,23 @@ public class HomepageController {
 	}
 
 	@GetMapping(value = { "/oauth" })
-	public String saveAuthorizationCode(HttpServletRequest request) throws Exception {
+	public  String saveAuthorizationCode(HttpServletRequest request) throws Exception {
 		String code = request.getParameter("code");
 	if (code != null) {
 			saveToken(code);
+			/*URI yahoo = new URI("http://localhost:4200");
+		    HttpHeaders httpHeaders = new HttpHeaders();
+		    httpHeaders.setLocation(yahoo);
+		    return new ResponseEntity<>(httpHeaders, HttpStatus.SEE_OTHER);*/
 
-			return "dashboard.html";
+		return "dashboard.html";
 		}
 
-		return "index.html";
+	/*URI yahoo = new URI("http://localhost:4200");
+    HttpHeaders httpHeaders = new HttpHeaders();
+    httpHeaders.setLocation(yahoo);
+    return new ResponseEntity<>(httpHeaders, HttpStatus.SEE_OTHER);*/
+	return "index.html";
 	}
 
 	private void saveToken(String code) throws Exception {
@@ -265,9 +280,12 @@ public class HomepageController {
 		      .setFields("nextPageToken, files(id, name)")
 		      .setPageToken(pageToken)
 		      .execute();
+		  Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		  System.out.println("yeah"+auth.getName());
 		 
 		  return result.getFiles();
-		
+//********************************* how I can get the time ******************************/
+// https://developers.google.com/drive/api/v3/reference/files#properties
 
 	}
 	@GetMapping(value = { "/listfiles/{id}" }, produces = { "application/json" })

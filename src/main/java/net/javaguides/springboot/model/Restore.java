@@ -1,8 +1,14 @@
 package net.javaguides.springboot.model;
 
+import lombok.Data;
+
+@Data
 public class Restore {
 
 	private String dataBaseName;
+	private String host;
+	private String userName;
+	private String fileName;
 	public String getDataBaseName() {
 		return dataBaseName;
 	}

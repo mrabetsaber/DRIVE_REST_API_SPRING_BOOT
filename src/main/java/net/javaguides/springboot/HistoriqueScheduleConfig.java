@@ -1,11 +1,14 @@
 
-/*
+
 package net.javaguides.springboot;
 
 
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Scanner;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
@@ -14,6 +17,7 @@ import org.springframework.scheduling.annotation.SchedulingConfigurer;
 import org.springframework.scheduling.config.ScheduledTaskRegistrar;
 import org.springframework.scheduling.support.CronTrigger;
 
+import net.javaguides.springboot.model.HistoriqueUtilisation;
 import net.javaguides.springboot.repository.HistoriqueBackupRepository;
 import net.javaguides.springboot.repository.HistoriqueUtilisationRepository;
 import net.javaguides.springboot.repository.ParametrageBackupRepository;
@@ -30,17 +34,14 @@ public class HistoriqueScheduleConfig implements SchedulingConfigurer {
 	
 
 	@Autowired
-	HistoriqueBackupRepository historiqueBackupRepository;
+	HistoriqueUtilisationRepository historiqueUtilisationRepository;
 	@Autowired
 	ParametrageHistoriqueRepository parametrageRepository;
 	@Autowired
 	HistoriqueUtilisationRepository utilisationRepository;
 	
 
-	@Autowired
-	  @SuppressWarnings("all")
-
-	  Data data;
+	
 	
 	 
 	
@@ -60,21 +61,49 @@ public class HistoriqueScheduleConfig implements SchedulingConfigurer {
 			Runnable runnable = () ->{
 				LocalDateTime myDateObj = LocalDateTime.now();
 				
-				DateTimeFormatter myFormatObj = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
+				DateTimeFormatter myFormatObj = DateTimeFormatter.ofPattern("dd-MM-yyyy");
 				
 				String formattedDate = myDateObj.format(myFormatObj);
-				
-			
-				HistoriqueBackup h = new HistoriqueBackup(data.getProduction(),data.getVignette(),data.getSORTIE()
-						,data.getENGAGEMENT(),data.getEntreTissu(),data.getEntreForniture(),data.getSortieeTissu(),data.getSortieeForniture(),
-						data.getINVENTAIRE_INTERNETissu(),data.getINVENTAIRE_INTERNEFourniture(),data.getRETOURTissu(),data.getRETOURFourniture()
-						,data.getRESERVATIONTissu(),data.getRESERVATIONFourniture(),formattedDate);
-				
-       		
+				int PostNumber=0;
+				int deleteNumber=0;
+				int updateNumber=0;
+				int getNumber=0;
+
+				String operation;
+				HistoriqueUtilisation h =new HistoriqueUtilisation();
+				 try {
+				      File myObj = new File(parametragehistorique.getFileName());
+				      Scanner myReader = new Scanner(myObj);
+				      while (myReader.hasNextLine()) {
+				        String data = myReader.nextLine();
+				        operation=data.split("\"")[1];
+				        if(operation.split("/")[2].equals(parametragehistorique.getTableName())) {
+				        	if(operation.split(" ")[0].equals("POST")) {
+				        		 PostNumber++;
+				        	}else if(operation.split(" ")[0].equals("GET")) {
+				        		getNumber++;
+				        	}else if(operation.split(" ")[0].equals("UPDATE")) {
+				        		updateNumber++;
+				        	}else if(operation.split(" ")[0].equals("DELETE")) {
+				        		deleteNumber++;
+				        	}
+				        }
+				      }
+				      h.setPostNumber(PostNumber);
+				      h.setUpdateNumber(updateNumber);
+				      h.setDeleteNumber(deleteNumber);
+				      h.setGetNumber(getNumber);
+				      h.setTableName("C:\\Users\\asus\\Downloads\\logsMois4et5annee22\\"+parametragehistorique.getTableName());
+				      h.setDate(formattedDate);
+				      myReader.close();
+				    } catch (FileNotFoundException e) {
+				      System.out.println("An error occurred.");
+				      e.printStackTrace();
+				    }  		
        		
 
        		 try {
-       			historiqueBackupRepository.save(h);
+       			historiqueUtilisationRepository.save(h);
        			 
        			 } catch (Exception e) {
        			 // TODO Auto-generated catch block
@@ -118,4 +147,4 @@ public class HistoriqueScheduleConfig implements SchedulingConfigurer {
 	
 	
 	}
-}*/
+}

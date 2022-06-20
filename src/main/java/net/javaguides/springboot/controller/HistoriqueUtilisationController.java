@@ -73,7 +73,6 @@ public class HistoriqueUtilisationController {
 		HistoriqueUtilisation historiqueUtilisation= historiqueUtilisationRepository.findById(historiqueUtilisationID)
 				.orElseThrow(() -> new ResourceNotFoundException("Backup not found for this id :: " + historiqueUtilisationID));
 
-		historiqueUtilisation.setLineNumber(historiqueUtilisationDetails.getLineNumber());
 		
 		final HistoriqueUtilisation updatedhistoriqueUtilisation = historiqueUtilisationRepository.save(historiqueUtilisation);
 		return ResponseEntity.ok(updatedhistoriqueUtilisation);

@@ -1,5 +1,8 @@
 package net.javaguides.springboot.model;
 
+import lombok.Data;
+
+@Data
 public class EmailAttachment {
 
 	 public String name;

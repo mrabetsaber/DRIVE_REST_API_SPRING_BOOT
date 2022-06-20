@@ -14,9 +14,14 @@ import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import lombok.Getter;
+import lombok.Setter;
+
 
 @Entity
 @Table( name = "backups")
+@Getter
+@Setter
 public class ParametrageBackupEntity {
 	
 	@Id
@@ -27,6 +32,7 @@ public class ParametrageBackupEntity {
 	private String schedule;
 	private String emailSender;
 	private String emailReceiver;
+	private String strategy;
 
 
 	

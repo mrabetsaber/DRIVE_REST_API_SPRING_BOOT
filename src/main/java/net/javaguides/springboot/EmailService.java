@@ -51,7 +51,7 @@ public class EmailService {
 	}
 	
 	
-	public String sendEmailwithAttachment(String reciever, String sender, String url,String db,String client) {
+	public String sendEmailwithAttachment(String reciever, String url,String db,String client) {
 		MimeMessage message = javaMailSender.createMimeMessage();
 		
 		LocalDateTime myDateObj = LocalDateTime.now();
@@ -62,14 +62,13 @@ public class EmailService {
 		   		try {
 		   			MimeMessageHelper messageHelper = 
 		   					new MimeMessageHelper(message, true);
-			messageHelper.setFrom("mrabetsaber31@gmail.com");
 			//String [] reciever1=reciever.split(";");
 			messageHelper.setTo("mrabetsaber31@gmail.com");
 			message.setSubject(client+"-BACKUP-"+db+formattedDate);
 			
 			messageHelper.setText("productionJour type production :");
 			
-			File file = new File("C:/Users/asus/Desktop/backup_CLIENT.backup");
+			File file = new File(url);
 			
 		messageHelper.addAttachment(file.getName(), file);
 		System.out.print("hey "+file.getName()+" "+reciever);
@@ -81,7 +80,8 @@ public class EmailService {
 			
 			
 		} catch (Exception e) {
-			historique=new HistoriqueEntity(formattedDate,"Mail sent failed");
+			e.printStackTrace();
+			historique=new HistoriqueEntity(formattedDate,"Mail sent failed",e.toString());
 			historiqueRepository.save(historique);
 			return "Mail sent failed";
 		}
@@ -89,28 +89,18 @@ public class EmailService {
 		}
 	
 	
-	    public String sendHtmlEmail() throws MessagingException {
+	    public String sendHtmlEmail( String[] to,String subject,String text) throws MessagingException {
 	 
-	        MimeMessage message = javaMailSender.createMimeMessage();
-	 
-	        boolean multipart = true;
-	         
-	        MimeMessageHelper helper = new MimeMessageHelper(message, multipart, "utf-8");
-	         
-	        String htmlMsg = "<h3>Im testing send a HTML email</h3>"
-	                +"<img src='http://www.apache.org/images/asf_logo_wide.gif'>";
-	         
-	        message.setContent(htmlMsg, "text/html");
-	         
-	        helper.setTo("mrabetsaber31@gmail.com");
-	        helper.setFrom("mrabetsaber31@gmail.com");
-	         
-	        helper.setSubject("Test send HTML email");
-	         
-	     
-	        this.javaMailSender.send(message);
-	 
-	        return "Email Sent!";
+	    	SimpleMailMessage message = new SimpleMailMessage();
+			
+			message.setFrom("mrabetsaber31@gmail.com");
+			message.setTo(to);
+			message.setSubject(subject);
+			message.setText(text);
+			
+			javaMailSender.send(message);
+			
+			return "Mail sent successfully";
 	    }
 	
 	

@@ -13,25 +13,36 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+
+import lombok.Getter;
+import lombok.Setter;
+import net.javaguides.springboot.appuser.AppUser;
 
 
 @Entity
 @Table(name = "servers")
+@Getter
+@Setter
+
 public class Server {
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 	
-	@Column(name = "type")
-    private String type;
+    private String host;
 	
 	@Column(name = "user_name")
     private String userName;
 	
 	@Column(name = "password")
     private String password;
+	
+	@ManyToOne
+    @JoinColumn(name="user_id", nullable=false)
+    private AppUser user;
 	
 	
 	
@@ -46,9 +57,9 @@ public class Server {
     }
     
 
-	public Server(String type, String userName, String password) {
+	public Server(String host, String userName, String password) {
 		super();
-		this.type = type;
+		this.host = host;
 		this.userName = userName;
 		this.password = password;
 	}
@@ -62,12 +73,12 @@ public class Server {
 		this.id = id;
 	}
 
-	public String getType() {
-		return type;
+	public String getHost() {
+		return host;
 	}
 
-	public void setType(String type) {
-		this.type = type;
+	public void setHost(String host) {
+		this.host = host;
 	}
 
 	public String getUserName() {

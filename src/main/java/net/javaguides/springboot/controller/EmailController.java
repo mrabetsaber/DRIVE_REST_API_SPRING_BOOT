@@ -9,6 +9,7 @@ import java.util.Properties;
 import javax.mail.Address;
 import javax.mail.Folder;
 import javax.mail.Message;
+import javax.mail.MessagingException;
 import javax.mail.Multipart;
 import javax.mail.Part;
 import javax.mail.Session;
@@ -40,11 +41,12 @@ public class EmailController {
 	private ParametrageBackupRepository parametrageBackuprepository;
 	
 
-	@GetMapping("/sendEmail/{id}")
+	@GetMapping("/sendEmail")
 
-	public String sendEmail(@PathVariable(value = "id") Long id) {
+	public String sendEmail() throws MessagingException {
+		String []e= {"mrabetsaber311@gmail.com","mrabetsaber31@gmail.com"};
 			
-		return emailService.sendEmail();
+		return emailService.sendHtmlEmail(e, "ddfd", "fnds");
 	}
 	
 	
@@ -54,7 +56,7 @@ public class EmailController {
 			throws ResourceNotFoundException{
 		ParametrageBackupEntity backup =parametrageBackuprepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Employee not found for this id :: " + id));
 		String reciever =backup.getEmailReceiver();
-		return emailService.sendEmailwithAttachment(reciever,backup.getEmailSender(),"","","");
+		return emailService.sendEmailwithAttachment(reciever,backup.getEmailSender(),"","");
 	}
 	
 	@GetMapping("/getAllEmail")

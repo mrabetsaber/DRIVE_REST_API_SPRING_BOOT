@@ -16,12 +16,12 @@ public class HistoriqueEntity {
 	private String status;
 	private String exception;
 	
-	public HistoriqueEntity(Long id, String time, String status, String exception) {
+	public HistoriqueEntity( String time, String status, String exception) {
 		super();
-		this.id = id;
 		this.time = time;
 		this.status = status;
 		this.exception = exception;
+		
 	}
 	public String getException() {
 		return exception;

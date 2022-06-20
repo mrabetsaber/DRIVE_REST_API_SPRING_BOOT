@@ -1,5 +1,9 @@
 package net.javaguides.springboot.controller;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -23,6 +27,7 @@ import net.javaguides.springboot.model.ParametrageBackupEntity;
 import net.javaguides.springboot.model.Restore;
 import net.javaguides.springboot.model.Server;
 import net.javaguides.springboot.repository.ParametrageBackupRepository;
+import net.javaguides.springboot.repository.ServerBackupRepository;
 import net.javaguides.springboot.repository.ServerRepository;
 @CrossOrigin(origins = "*")
 @RestController
@@ -32,7 +37,8 @@ public class ParametrageBackupController {
 	private ParametrageBackupRepository parametrageBackuprepository;
 	@Autowired
 	private ServerRepository serverepository;
-	
+	@Autowired
+	private ServerBackupRepository serverBackupRepository;
 	
 	@GetMapping("/backup")
 	public List<ParametrageBackupEntity> getAllBackup() {
@@ -64,6 +70,7 @@ public class ParametrageBackupController {
 		backup.setEmailReceiver(backupDetails.getEmailReceiver());
 		backup.setEmailSender(backupDetails.getEmailSender());
 		backup.setSchedule(backupDetails.getSchedule());
+		backup.setStrategy(backupDetails.getStrategy());
 		
 		final ParametrageBackupEntity updatedBackup = parametrageBackuprepository.save(backup);
 		return ResponseEntity.ok(updatedBackup);
@@ -77,7 +84,7 @@ public class ParametrageBackupController {
 			throws ResourceNotFoundException {
 		ParametrageBackupEntity backup = parametrageBackuprepository.findById(BackupId)
 				.orElseThrow(() -> new ResourceNotFoundException("Backup not found for this id :: " + BackupId));
-
+		serverBackupRepository.deleteById(BackupId);
 		parametrageBackuprepository.delete(backup);
 		Map<String, Boolean> response = new HashMap<>();
 		response.put("deleted", Boolean.TRUE);
@@ -112,24 +119,32 @@ public class ParametrageBackupController {
 	}
 	
 	@PostMapping("/backup/restore")
-	public void restoreBackup( @RequestBody Restore restore) {
-		
-		
-		   System.out.println(restore.getDataBaseName());
-		try
-   	 {	        		
-   			 Runtime.getRuntime().exec("cmd /c start cmd.exe /K \"cd C:/Program Files/PostgreSQL/9.3/bin/ &&  pg_restore.exe --host localhost --port 5432 --username \"postgres\" --dbname \""
-   			 		+ restore.getDataBaseName()+"\" --role \"postgres\" --no-password  --verbose \"C:/Users/asus/Desktop/backup_CLIENT.backup\"");
-   		 }
-         // We are running "dir" and "ping" command on cmd
-        
-        
-        catch (Exception e)
-        {
-            System.out.println("HEY Buddy ! U r Doing Something Wrong ");
-            e.printStackTrace();
-        }
+	public void restoreBackup( @RequestBody Restore restore) throws IOException {
+		Runtime r = Runtime.getRuntime();
+		 String rutaCT ="src\\main\\resources\\BAKCUPS\\";
+		Process p;
+		ProcessBuilder pb;
+		r = Runtime.getRuntime();
+		pb = new ProcessBuilder( 
+				rutaCT+
+		    "pg_restore.exe",
+		    "--host="+restore.getHost(),
+		    "--port=5432",
+		    "--username="+restore.getUserName(),
+		    "--dbname="+restore.getDataBaseName(),
+		    "--role="+restore.getUserName(),
+		    "--no-password",
+		    "--verbose",
+		   "C:/Users/asus/Downloads/"+restore.getFileName());
+		pb.redirectErrorStream(true);
+		p = pb.start();
+		InputStream is = p.getInputStream();
+		InputStreamReader isr = new InputStreamReader(is);
+		BufferedReader br = new BufferedReader(isr);
+		String ll;
+		while ((ll = br.readLine()) != null) {
+		 System.out.println(ll);
+		}    
+	
 	}
-	
-	
 }

@@ -24,6 +24,8 @@ public class ParametrageHistoriqueEntity {
 	private long id;
 	private String tableName;
 	private String time;
+	private String fileName;
+	
 	@ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	@JoinTable(name = "HistoriqueUtilisation_ParametrageHistorique",
 		joinColumns = { @JoinColumn(name = "parametrage_id")},
@@ -69,6 +71,20 @@ public class ParametrageHistoriqueEntity {
 		    this.historiqueUtilisation.add(_server);
 		    _server.getParametrageHistoriques().add(this);
 		  }
+	public String getFileName() {
+		return fileName;
+	}
+	public void setFileName(String fileName) {
+		this.fileName = fileName;
+	}
+	public ParametrageHistoriqueEntity(String tableName, String time, String fileName,
+			Set<HistoriqueUtilisation> historiqueUtilisation) {
+		super();
+		this.tableName = tableName;
+		this.time = time;
+		this.fileName = fileName;
+		this.historiqueUtilisation = historiqueUtilisation;
+	}
 	
 
 }

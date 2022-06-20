@@ -60,7 +60,7 @@ public class ServerController {
 		Server server= serverepository.findById(serverId)
 				.orElseThrow(() -> new ResourceNotFoundException("server not found for this id :: " + serverId));
 
-		server.setType(serverDetails.getType());
+		server.setHost(serverDetails.getHost());
 		server.setUserName(serverDetails.getUserName());
 		server.setPassword(serverDetails.getPassword());
 		
